@@ -20,6 +20,7 @@
 
 import UIKit
 
+
 public extension UIViewController {
   var evo_drawerController: DrawerController? {
     var parentViewController = self.parent
@@ -82,6 +83,11 @@ private func bounceKeyFrameAnimation(forDistance distance: CGFloat, on view: UIV
   animation.autoreverses = false
 
   return animation
+}
+
+public protocol DrawerDebug{
+    func debug(nvc: UINavigationController?, vc: UIViewController?, data:String?)
+    func fixRootVCFrame(desiredSize: CGSize)
 }
 
 public enum DrawerSide: Int {
@@ -200,6 +206,7 @@ open class DrawerController: UIViewController, UIGestureRecognizerDelegate {
   fileprivate var _maximumLeftDrawerWidth = DrawerDefaultWidth
   fileprivate var _maximumRightDrawerWidth = DrawerDefaultWidth
 
+   public var delegate:DrawerDebug?
   /**
    The center view controller.
 
@@ -1418,7 +1425,10 @@ open class DrawerController: UIViewController, UIGestureRecognizerDelegate {
 
   open override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
     super.viewWillTransition(to: size, with: coordinator)
-
+    
+    delegate?.debug(nvc: navigationController, vc: self, data: "viewWillTransition: \(size.debugDescription)")
+    delegate?.fixRootVCFrame(desiredSize: size)
+    
     //If a rotation begins, we are going to cancel the current gesture and reset transform and anchor points so everything works correctly
     var gestureInProgress = false
 
